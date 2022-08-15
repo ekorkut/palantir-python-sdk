@@ -27,7 +27,11 @@ Authentication tokens serve as a private password and allows a connection to Fou
 
 ## Examples
 
-### Read a Foundry Dataset into a Pandas DataFrame
+Using this SDK, you can interact both with datasets and objects.
+
+### Dataset examples
+
+#### Read a Foundry Dataset into a Pandas DataFrame
 ```python
 from palantir.datasets import dataset
 
@@ -52,7 +56,7 @@ dataset("/Path/to/dataset") \
 [235886 rows x 5 columns]
 ```
 
-### Write a Pandas DataFrame to a Foundry Dataset
+#### Write a Pandas DataFrame to a Foundry Dataset
 ```python
 import pandas as pd
 from palantir.datasets import dataset
@@ -66,7 +70,7 @@ ds = dataset(f"/Path/to/dataset", create=True)
 ds.write_pandas(df)
 ```
 
-### List files in a Dataset
+#### List files in a Dataset
 ```python
 from palantir.datasets import dataset
 
@@ -82,7 +86,7 @@ list(files)
 ]
 ```
 
-### Read the contents of a file from a dataset (by name)
+#### Read the contents of a file from a dataset (by name)
 ```python
 from palantir.datasets import dataset
 
@@ -94,7 +98,7 @@ dataset("/Path/to/dataset") \
 b'Hello!'
 ```
 
-### Read the contents of a file from a dataset (by exploration / listing)
+#### Read the contents of a file from a dataset (by exploration / listing)
 ```python
 from palantir.datasets import dataset
 
@@ -105,7 +109,7 @@ next(files).read()
 b'Hello!'
 ```
 
-### Dataset functions also accept Resource Identifiers (rids)
+#### Dataset functions also accept Resource Identifiers (rids)
 ```python
 from palantir.datasets import dataset
 
@@ -116,6 +120,22 @@ dataset("ri.foundry.main.dataset.a0a94f00-754e-49ff-a4f6-4f5cc200d45d") \
   string  integer
 0    one        1
 1    two        2
+```
+
+### Object examples
+
+#### List ontologies
+```python
+from palantir import objects
+onts = objects.list_ontologies()
+onts
+```
+
+```python
+[
+    Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology'),
+    Ontology(rid=ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000, description='The default Ontology.', display_name='Ontology')
+]
 ```
 
 ## Contributing

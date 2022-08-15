@@ -31,7 +31,7 @@ def context(hostname: str = None, token: str = None) -> PalantirContext:
         2) The value of the `hostname` attribute in the default block of `~/.palantir/config`
 
     If `token` is not specified then a default token provider chain will use, in order:
-        1) The value of the `PALANTIR_HOSTNAME` environment variable
+        1) The value of the `PALANTIR_TOKEN` environment variable
         2) The value of the `token` attribute in the default block of `~/.palantir/config`
 
     Args:

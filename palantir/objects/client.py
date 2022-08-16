@@ -48,14 +48,11 @@ class ObjectsClient:
         .. _endpoint:
             https://www.palantir.com/docs/foundry/api/ontology-resources/ontology/list-ontologies/
         """
-
-        return self._api_service.list_ontologies(auth_header=self.ctx.auth_token)
-        """
         return [
             Ontology(
-                ResourceIdentifier.try_parse("ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367"),
-                "description",
-                "displayName"
+                description=ont.description,
+                rid=ResourceIdentifier.try_parse(ont.rid),
+                display_name=ont.display_name,
             )
+            for ont in self._api_service.list_ontologies(auth_header=self.ctx.auth_token).data
         ]
-        """

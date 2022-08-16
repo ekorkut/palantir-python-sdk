@@ -15,7 +15,7 @@
 import typing
 
 from palantir.objects.types import Ontology
-from palantir.core.types import PalantirContext, ResourceIdentifier
+from palantir.core.types import PalantirContext
 from palantir.core import context
 
 from palantir.objects.client import ObjectsClient, ObjectServices
@@ -26,11 +26,4 @@ def list_ontologies(
 ) -> typing.List[Ontology]:
     obj_client = ObjectsClient(ObjectServices(ctx or context()))
     ontologies = obj_client.list_ontologies()
-    return [
-        Ontology(
-            description=ont.description,
-            rid=ResourceIdentifier.try_parse(ont.rid),
-            display_name=ont.display_name,
-        )
-        for ont in ontologies.data
-    ]
+    return ontologies

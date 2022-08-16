@@ -21,6 +21,7 @@ from palantir.core.config import (
     AuthToken,
     HostnameProvider,
     TokenProvider,
+    OntologyRidProvider
 )
 
 if TYPE_CHECKING:
@@ -40,9 +41,11 @@ class PalantirContext:
         self,
         hostname: HostnameProvider,
         auth: TokenProvider,
+        ontology_rid: OntologyRidProvider = None
     ):
         self.hostname_provider = hostname
         self.token_provider = auth
+        self.ontology_rid_provider = ontology_rid
 
     @property
     def hostname(self) -> str:
@@ -52,11 +55,19 @@ class PalantirContext:
     def auth_token(self) -> AuthToken:
         return self.token_provider.get()
 
+    @property
+    def ontology_rid(self) -> str:
+        if self.ontology_rid_provider is None:
+            return None
+        else:
+            return self.ontology_rid_provider.get()
+
     def __eq__(self, other: object):
         return other is self or (
             isinstance(other, PalantirContext)
             and other.hostname_provider == self.hostname_provider
             and other.token_provider == self.token_provider
+            and other.ontology_rid_provider == self.ontology_rid_provider
         )
 
 

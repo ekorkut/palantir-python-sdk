@@ -15,16 +15,18 @@
 from .config import (
     DefaultTokenProviderChain,
     DefaultHostnameProviderChain,
+    DefaultOntologyRidProviderChain,
     StaticTokenProvider,
     StaticHostnameProvider,
+    StaticOntologyRidProvider,
     AuthToken,
 )
 from .types import PalantirContext
 
 
-def context(hostname: str = None, token: str = None) -> PalantirContext:
+def context(hostname: str = None, token: str = None, ontology_rid: str = None) -> PalantirContext:
     """
-    Creates a new :class:`PalantirContext` object with hard coded values for `hostname` and `token`.
+    Creates a new :class:`PalantirContext` object with hard coded values for `hostname`, `token` and `ontology_rid`.
 
     If `hostname` is not specified then a default hostname provider chain will use, in order:
         1) The value of the `PALANTIR_HOSTNAME` environment variable
@@ -34,9 +36,14 @@ def context(hostname: str = None, token: str = None) -> PalantirContext:
         1) The value of the `PALANTIR_TOKEN` environment variable
         2) The value of the `token` attribute in the default block of `~/.palantir/config`
 
+    If `ontology_rid` is not specified then a default rid provider chain will use, in order:
+        1) The value of the `PALANTIR_ONTOLOGY_RID` environment variable
+        2) The value of the `ontology_rid` attribute in the default block of `~/.palantir/config`
+
     Args:
         hostname: The hostname of the Palantir instance. E.g. `example.palantirfoundry.com`.
         token: A Palantir Bearer Token.
+        ontology_rid: The resource identifier (rid) of the Palantir ontology. E.g. `ri.ontology.main.ontology.xyz`
 
     Returns: A :class:`PalantirContext` object that can be passed to the `ctx` argument of many sdk functions.
     """
@@ -51,4 +58,9 @@ def context(hostname: str = None, token: str = None) -> PalantirContext:
             if token
             else DefaultTokenProviderChain()
         ),
+        ontology_rid=(
+            StaticOntologyRidProvider(ontology_rid)
+            if ontology_rid
+            else DefaultOntologyRidProviderChain()
+        )
     )

@@ -27,6 +27,7 @@ AuthToken = NewType("AuthToken", str)  # TODO(ahiggins): is a custom type worth 
 class Config:
     hostname: Optional[str] = None
     token: "Optional[AuthToken]" = None
+    ontology_rid: Optional[str] = None
 
 
 class ConfigLoader:
@@ -234,3 +235,95 @@ class TokenProviderChain(TokenProvider):
 class DefaultTokenProviderChain(TokenProviderChain):
     def __init__(self):
         super().__init__(EnvironmentTokenProvider(), ConfigFileTokenProvider())
+
+
+class OntologyRidProvider(ABC):
+    @abstractmethod
+    def get(self) -> str:
+        pass
+
+    def try_get(self) -> Optional[str]:
+        return self.get()
+
+
+class StaticOntologyRidProvider(OntologyRidProvider):
+    def __init__(self, ontology_rid: str):
+        self.ontology_rid = ontology_rid
+
+    def get(self) -> str:
+        return self.ontology_rid
+
+    def __eq__(self, other: object) -> bool:
+        return other is self or (
+            isinstance(other, StaticOntologyRidProvider)
+            and other.ontology_rid == self.ontology_rid
+        )
+
+
+class EnvironmentOntologyRidProvider(OntologyRidProvider):
+    def __init__(self, env_var: str = None):
+        self.env_var = env_var or "PALANTIR_ONTOLOGY_RID"
+
+    def get(self) -> str:
+        ontology_rid = self.try_get()
+        if ontology_rid:
+            return ontology_rid
+        raise ValueError(f"${self.env_var} is unset or empty")
+
+    def try_get(self) -> Optional[str]:
+        return os.environ.get(self.env_var)
+
+    def __eq__(self, other: object) -> bool:
+        return other is self or (
+            isinstance(other, EnvironmentOntologyRidProvider)
+            and other.env_var == self.env_var
+        )
+
+
+class ConfigFileOntologyRidProvider(OntologyRidProvider):
+    def __init__(self, config_loader: "ConfigLoader" = None):
+        self.config_loader = config_loader or ConfigLoader()
+
+    def get(self) -> str:
+        ontology_rid = self.try_get()
+        if ontology_rid:
+            return ontology_rid
+        raise ValueError("hostname attribute not found in config file")
+
+    def try_get(self) -> Optional[str]:
+        try:
+            return self.config_loader.load_config().ontology_rid
+        except FileNotFoundError:
+            return None
+
+    def __eq__(self, other: object) -> bool:
+        return other is self or (
+            isinstance(other, ConfigFileOntologyRidProvider)
+            and other.config_loader == self.config_loader
+        )
+
+
+class OntologyRidProviderChain(OntologyRidProvider):
+    def __init__(self, *args: OntologyRidProvider):
+        self.providers = args
+
+    def get(self) -> str:
+        try:
+            return next(
+                val
+                for val in (provider.try_get() for provider in self.providers)
+                if val is not None
+            )
+        except StopIteration as exc:
+            raise ValueError("No configured ontology_rid found.") from exc
+
+    def __eq__(self, other: object) -> bool:
+        return other is self or (
+            isinstance(other, OntologyRidProviderChain)
+            and other.providers == self.providers
+        )
+
+
+class DefaultOntologyRidProviderChain(OntologyRidProviderChain):
+    def __init__(self):
+        super().__init__(EnvironmentOntologyRidProvider(), ConfigFileOntologyRidProvider())

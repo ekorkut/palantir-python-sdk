@@ -21,8 +21,10 @@ from palantir.core.config import (
     AuthToken,
     DefaultHostnameProviderChain,
     DefaultTokenProviderChain,
+    DefaultOntologyRidProviderChain,
     StaticHostnameProvider,
     StaticTokenProvider,
+    StaticOntologyRidProvider
 )
 from palantir.core.types import PalantirContext
 
@@ -32,14 +34,16 @@ class TestFunctions:
         expected = PalantirContext(
             StaticHostnameProvider("hostname"),
             StaticTokenProvider(AuthToken("token")),
+            StaticOntologyRidProvider("some_rid")
         )
 
-        expect(context("hostname", "token")).to(equal(expected))
+        expect(context("hostname", "token", "some_rid")).to(equal(expected))
 
     def test_context_defaults(self):
         expected = PalantirContext(
             DefaultHostnameProviderChain(),
             DefaultTokenProviderChain(),
+            DefaultOntologyRidProviderChain()
         )
 
         expect(context()).to(equal(expected))

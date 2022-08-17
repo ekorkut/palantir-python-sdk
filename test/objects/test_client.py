@@ -43,27 +43,15 @@ class TestClient:
         self.client = ObjectsClient(services)
 
     def test_list_ontologies(self):
-        rid1 = "ri.ontology.main.ontology.1"
-        desc1 = "First ontology description"
-        disp1 = "First ontology display"
-        rid2 = "ri.ontology.main.ontology.2"
-        desc2 = "Second ontology description"
-        disp2 = "Second ontology display"
+        rid1, desc1, disp1 = "ri.ontology.main.ontology.1", "First ontology description", "First ontology display"
+        rid2, desc2, disp2 = "ri.ontology.main.ontology.2", "Second ontology description", "Second ontology display"
 
         when(self.api_service).list_ontologies(
             auth_header=self.AUTH_HEADER
         ).thenReturn(ListOntologiesResponse(
             data=[
-                Ontology(
-                    description=desc1,
-                    display_name=disp1,
-                    rid=rid1
-                ),
-                Ontology(
-                    description=desc2,
-                    display_name=disp2,
-                    rid=rid2
-                )
+                Ontology(description=desc1, display_name=disp1, rid=rid1),
+                Ontology(description=desc2, display_name=disp2, rid=rid2)
             ]
         ))
         expected_ontologies = [

@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from palantir.core.types import ResourceIdentifier
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=True)
 class Ontology:
     rid: ResourceIdentifier
     description: str

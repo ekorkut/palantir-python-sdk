@@ -109,3 +109,5 @@ class ResourceIdentifier:
                 locator=match.group("locator"),
             )
         raise ValueError("value could not be parsed as a ResourceIdentifier")
+
+

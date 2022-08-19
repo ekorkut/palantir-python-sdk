@@ -18,14 +18,14 @@ conda install palantir-sdk
 mamba install palantir-sdk  # alternatively install with mamba
 ```
 
-Configuration for hostname and an authentication token are provided by environment variables (`PALANTIR_HOSTNAME`, `PALANTIR_TOKEN`)
+Configuration for hostname and an authentication token are provided by environment variables (`PALANTIR_HOSTNAME`, `PALANTIR_TOKEN`):
 
 * `PALANTIR_HOSTNAME` is the hostname of your instance e.g. `example.palantirfoundry.com`
 * `PALANTIR_TOKEN` is a token acquired from the `Tokens` section of Foundry Settings 
 
 Authentication tokens serve as a private password and allows a connection to Foundry data. Keep your token secret and do not share it with anyone else. Do not add a token to a source controlled or shared file.
 
-In addition, if you interact with objects, configuration for ontology resource identifier can be provided by the environment variable `PALANTIR_ONTOLOGY_RID`
+In addition, if you interact with objects, configuration for ontology resource identifier can be provided by the environment variable `PALANTIR_ONTOLOGY_RID`.
 
 ## Examples
 
@@ -151,7 +151,7 @@ my_ontology
 ```python
 Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
 ```
- or you can use `objects.ontology()`
+, or you can use `ontology()` with an resource identifier (RID) input argument
 ```python
 # Get ontology from an ontology resource identifier (RID)
 from palantir import objects
@@ -160,6 +160,7 @@ my_ontology = objects.ontology("ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a
 ```python
 Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
 ```
+, or without any input argument if the environment variable `.PALANTIR_ONTOLOGY_RID` is set.
 ```python
 # Get ontology from the environment (if the environment variable `PALANTIR_ONTOLOGY_RID` is set)
 from palantir import objects
@@ -189,6 +190,7 @@ airport_type
 ```
 
 #### List object instances for an object type
+You can use `list_objects()` on an object type to get instances:
 ```python
 airports = my_ontology.object_type("ExampleDataAirport").list_objects()
 an_airport = next(airports)
@@ -197,6 +199,7 @@ an_airport
 ```python
 # TODO: Put output here
 ```
+You can optionally limit the properties returned with `properties` input argument, and order the results using `order_by` input argument.
 ```python
 # Get airports returning with only properties X, Y, and Z and ordered by X in ascending order
 from palantir.objects import OrderTerm
@@ -211,10 +214,11 @@ an_airport = next(airports)
 ```
 
 #### Filtering objects
+`list_object` support filtering through the `filters` input argument. The filters applied on the same property are treated as "OR" and the ones on different properties treated as "AND".
 ```python
 from palantir.objects import PropertyFilter, FilterTerm
 ny_state_big_airports = my_ontology.object_type("ExampleDataAirport").list_objects(
-    filter=[
+    filters=[
         PropertyFilter("airportCountryName", FilterTerm.EQUAL, "United States"),
         PropertyFilter("airportStateCode", FilterTerm.EQUAL, "NY"),
         PropertyFilter("numberOfCarriers", FilterTerm.GREATER_THAN, 5)
@@ -227,7 +231,7 @@ next(ny_state_big_airports)
 ```
 
 #### Get object
-You can get an object through its object type and specifying its primary key
+You can get an object from an object type specifying its primary key, optionally limiting the properties returned.
 ```python
 jfk_airport = my_ontology.object_type("ExampleDataAirport").object(
     "JFK",
@@ -239,6 +243,7 @@ jfk_airport
 # TODO: Put output here
 ```
 #### List linked objects
+You can list the linked object instances on an object using `list_linked_objects`:
 ```python
 all_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
     "airport-to-current-aircraft",   
@@ -248,11 +253,12 @@ next(all_aircraft_currently_in_jfk)
 ```python
 # TODO: Put output here
 ```
+, and you can optionally limit the properties returned with `properties` input argument and use the same filtering mechanism above through `filters` input argument:
 ```python
 large_boeing_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
     "airport-to-current-aircraft",
     properties=["tailNumber", "model", "numberOfSeats"],
-    filter=[        
+    filters=[        
         PropertyFilter("manufacturer", FilterTerm.EQUAL, "United States"),
         PropertyFilter("numberOfSeats", FilterTerm.GREATER_THAN_OR_EQUAL, 200),
     ]
@@ -263,6 +269,7 @@ large_boeing_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
 ```
 
 #### Get linked object
+You can get a linked object instance from an instance specifying the link type and primary key for the linked object through input arguments:
 ```python
 jfk_to_mia_route = jfk_airport.linked_object(
     "departing-airport-to-route",

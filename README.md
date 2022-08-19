@@ -22,8 +22,10 @@ Configuration for hostname and an authentication token are provided by environme
 
 * `PALANTIR_HOSTNAME` is the hostname of your instance e.g. `example.palantirfoundry.com`
 * `PALANTIR_TOKEN` is a token acquired from the `Tokens` section of Foundry Settings 
- 
+
 Authentication tokens serve as a private password and allows a connection to Foundry data. Keep your token secret and do not share it with anyone else. Do not add a token to a source controlled or shared file.
+
+In addition, if you interact with objects, configuration for ontology resource identifier can be provided by the environment variable `PALANTIR_ONTOLOGY_RID`
 
 ## Examples
 
@@ -130,13 +132,170 @@ from palantir import objects
 onts = objects.list_ontologies()
 onts
 ```
-
 ```python
 [
     Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology'),
     Ontology(rid=ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000, description='The default Ontology.', display_name='Ontology')
 ]
 ```
+
+#### Get an ontology to work with
+You can use one of the outputs of `list_ontologies` as your handle to work with your ontology
+```python
+# Use output of list_ontologies
+from palantir import objects
+onts = objects.list_ontologies()
+my_ontology = onts[0]
+my_ontology
+```
+```python
+Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
+```
+ or you can use `objects.ontology()`
+```python
+# Get ontology from an ontology resource identifier (RID)
+from palantir import objects
+my_ontology = objects.ontology("ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367")
+```
+```python
+Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
+```
+```python
+# Get ontology from the environment (if the environment variable `PALANTIR_ONTOLOGY_RID` is set)
+from palantir import objects
+my_ontology = objects.ontology()
+```
+```python
+Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
+```
+
+#### List object types in your ontology
+```python
+all_object_types = my_ontology.list_object_types() # returns a generator
+an_object_type = next(all_object_types)
+an_object_type
+```
+```python
+ObjectType(api_name="ExampleDataAirport", primary_key="['airport']", rid="ri.ontology.main.object-type.000fee5d-7c54-4c6c-afd1-cef71c167c08")
+```
+
+#### Get an object type in your ontology
+```python
+airport_type = my_ontology.object_type("ExampleDataAirport")
+airport_type
+```
+```python
+# TODO: Put output here
+```
+
+#### List object instances for an object type
+```python
+airports = my_ontology.object_type("ExampleDataAirport").list_objects()
+an_airport = next(airports)
+an_airport
+```
+```python
+# TODO: Put output here
+```
+```python
+# Get airports returning with only properties X, Y, and Z and ordered by X in ascending order
+from palantir.objects import OrderTerm
+airports = my_ontology.object_type("ExampleDataAirport").list_objects(
+    properties=["airport", "airportCountryName", "numberOfCarriers"],
+    order_by=[("airportCountryName", OrderTerm.ASCENDING), ("numberOfCarriers", OrderTerm.DESCENDING)]
+)
+an_airport = next(airports)
+```
+```python
+# TODO: Put output here
+```
+
+#### Filtering objects
+```python
+from palantir.objects import PropertyFilter, FilterTerm
+ny_state_big_airports = my_ontology.object_type("ExampleDataAirport").list_objects(
+    filter=[
+        PropertyFilter("airportCountryName", FilterTerm.EQUAL, "United States"),
+        PropertyFilter("airportStateCode", FilterTerm.EQUAL, "NY"),
+        PropertyFilter("numberOfCarriers", FilterTerm.GREATER_THAN, 5)
+    ]
+)
+next(ny_state_big_airports)
+```
+```python
+# TODO: Put output here
+```
+
+#### Get object
+You can get an object through its object type and specifying its primary key
+```python
+jfk_airport = my_ontology.object_type("ExampleDataAirport").object(
+    "JFK",
+    properties=["displayAirportName", "displayCityMarketNameFull"]
+)
+jfk_airport
+```
+```python
+# TODO: Put output here
+```
+#### List linked objects
+```python
+all_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
+    "airport-to-current-aircraft",   
+)
+next(all_aircraft_currently_in_jfk)
+```
+```python
+# TODO: Put output here
+```
+```python
+large_boeing_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
+    "airport-to-current-aircraft",
+    properties=["tailNumber", "model", "numberOfSeats"],
+    filter=[        
+        PropertyFilter("manufacturer", FilterTerm.EQUAL, "United States"),
+        PropertyFilter("numberOfSeats", FilterTerm.GREATER_THAN_OR_EQUAL, 200),
+    ]
+)
+```
+```python
+# TODO: Put output here
+```
+
+#### Get linked object
+```python
+jfk_to_mia_route = jfk_airport.linked_object(
+    "departing-airport-to-route",
+    "primary_key_value_for_jfk_to_mia"
+)
+jfk_to_mia_route
+```
+```python
+# TODO: Put output here
+```
+
+#### Searching and querying objects (Experimental)
+You can search objects using the experimental [query language](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/search/) and [search by JSON](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/search-json/). Note that as the respective links indicate, these features are experimental at this point and may change or be removed.
+
+```python
+ny_state_big_airports = my_ontology.object_type("ExampleDataAirport").query(
+    # TODO: "equivalent_query_string_here"
+)
+next(ny_state_big_airports)
+```
+```python
+# TODO: Put output here
+```
+```python
+ny_state_big_airports = my_ontology.object_type("ExampleDataAirport").search(
+    # TODO: "equivalent_json_string_here"
+)
+next(ny_state_big_airports)
+```
+```python
+# TODO: Put output here
+```
+
 
 ## Contributing
 

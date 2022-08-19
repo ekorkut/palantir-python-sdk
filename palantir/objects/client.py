@@ -16,8 +16,9 @@ import typing
 
 from palantir.core.types import PalantirContext, ResourceIdentifier
 from palantir.core.rpc import ConjureClient
+from palantir.core.util import page_results
 from palantir.objects.rpc.api import APIService
-from palantir.objects.types import Ontology
+from palantir.objects.core import Ontology, ObjectType
 
 
 class ObjectServices:
@@ -53,6 +54,23 @@ class ObjectsClient:
                 description=ont.description,
                 rid=ResourceIdentifier.try_parse(ont.rid),
                 display_name=ont.display_name,
+                client=self
             )
             for ont in self._api_service.list_ontologies(auth_header=self.ctx.auth_token).data
         ]
+
+    def list_object_types(self, ontology_rid) -> typing.Generator["ObjectType", None, None]:
+        for obj_type in page_results(
+            values_extractor=lambda page: page.data,
+            token_extractor=lambda page: page.next_page_token,
+            page_supplier=lambda next_page_token: self._api_service.list_object_types(
+                auth_header=self.ctx.auth_token, ontology_rid=ontology_rid
+            ),
+        ):
+            yield ObjectType(
+                api_name=obj_type.api_name,
+                description=obj_type.description,
+                primary_key=obj_type.primary_key,
+                properties=obj_type.properties,
+                rid=ResourceIdentifier.try_parse(obj_type.rid)
+            )

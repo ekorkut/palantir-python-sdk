@@ -12,12 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from .types import OrderTerm, PropertyFilter, FilterTerm
+
 import typing
 
-from palantir.objects.types import Ontology
 from palantir.core.types import PalantirContext
 from palantir.core import context
 
+from palantir.objects.core import Ontology
 from palantir.objects.client import ObjectsClient, ObjectServices
 
 
@@ -46,7 +48,7 @@ def list_ontologies(
     return ontologies
 
 
-def get_ontology(rid: str = None, ctx: PalantirContext = None):
+def ontology(rid: str = None, ctx: PalantirContext = None) -> Ontology:
     """
     Create an object for the ontology
 
@@ -60,7 +62,7 @@ def get_ontology(rid: str = None, ctx: PalantirContext = None):
     Examples:
         >>> from palantir import objects
 
-        >>> my_ontology = objects.get_ontology(rid="ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367")
+        >>> my_ontology = objects.ontology(rid="ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367")
     """
     all_ontologies = list_ontologies()
     if rid is not None:

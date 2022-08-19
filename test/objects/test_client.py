@@ -18,7 +18,7 @@ from expects import expect, equal
 
 from palantir.objects.client import ObjectsClient, ObjectServices
 from palantir.objects.rpc.api import APIService, ListOntologiesResponse, Ontology
-from palantir.objects.types import (
+from palantir.objects.core import (
     Ontology as FinalOntology
 )
 
@@ -58,12 +58,14 @@ class TestClient:
             FinalOntology(
                 rid=ResourceIdentifier.try_parse(rid1),
                 description=desc1,
-                display_name=disp1
+                display_name=disp1,
+                client=None
             ),
             FinalOntology(
                 rid=ResourceIdentifier.try_parse(rid2),
                 description=desc2,
-                display_name=disp2
+                display_name=disp2,
+                client=None
             )
         ]
         expect(self.client.list_ontologies()).to(

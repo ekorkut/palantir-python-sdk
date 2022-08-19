@@ -12,32 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from enum import Enum
-from dataclasses import dataclass
-from typing import Any
+class TestOntology:
 
+    def test_list_object_types(self):
+        pass
 
-class FilterTerm(Enum):
-    CONTAINS = "contains"
-    EQUAL = "eq"
-    LESS_THAN = "lt"
-    LESS_THAN_OR_EQUAL = "lte"
-    GREATER_THAN = "gt"
-    GREATER_THAN_OR_EQUAL = "gte"
-    IS_NULL = "is"
-
-
-class OrderTerm(Enum):
-    ASCENDING = ":asc"
-    DESCENDING = ":desc"
-
-
-@dataclass(frozen=True)
-class PropertyFilter:
-    property: str
-    filter: FilterTerm
-    value: Any
-
-
-
-
+    def test_object_type(self):
+        pass

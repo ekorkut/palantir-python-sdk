@@ -140,7 +140,7 @@ onts
 ```
 
 #### Get an ontology to work with
-You can use one of the outputs of `list_ontologies` as your handle to work with your ontology
+You can use one of the outputs of `list_ontologies` as your handle to work with your ontology:
 ```python
 # Use output of list_ontologies
 from palantir import objects
@@ -151,7 +151,7 @@ my_ontology
 ```python
 Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
 ```
-, or you can use `ontology()` with an resource identifier (RID) input argument
+, or you can use `ontology()` with a resource identifier (RID) input argument:
 ```python
 # Get ontology from an ontology resource identifier (RID)
 from palantir import objects
@@ -160,7 +160,7 @@ my_ontology = objects.ontology("ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a
 ```python
 Ontology(rid=ri.ontology.main.ontology.c61d9ab5-2919-4127-a0a1-ac64c0ce6367, description='The ontology shared with our suppliers', display_name='Shared ontology')
 ```
-, or without any input argument if the environment variable `.PALANTIR_ONTOLOGY_RID` is set.
+, or without any input argument if the environment variable `PALANTIR_ONTOLOGY_RID` is set:
 ```python
 # Get ontology from the environment (if the environment variable `PALANTIR_ONTOLOGY_RID` is set)
 from palantir import objects
@@ -199,7 +199,7 @@ an_airport
 ```python
 # TODO: Put output here
 ```
-You can optionally limit the properties returned with `properties` input argument, and order the results using `order_by` input argument.
+, optionally limiting the properties returned with `properties` input argument, and ordering the results using `order_by` input argument:
 ```python
 # Get airports returning with only properties X, Y, and Z and ordered by X in ascending order
 from palantir.objects import OrderTerm
@@ -214,7 +214,7 @@ an_airport = next(airports)
 ```
 
 #### Filtering objects
-`list_object` support filtering through the `filters` input argument. The filters applied on the same property are treated as "OR" and the ones on different properties treated as "AND".
+`list_objects` support filtering through the `filters` input argument. The filters applied on the same property are treated as "OR" and the ones on different properties treated as "AND":
 ```python
 from palantir.objects import PropertyFilter, FilterTerm
 ny_state_big_airports = my_ontology.object_type("ExampleDataAirport").list_objects(
@@ -253,7 +253,7 @@ next(all_aircraft_currently_in_jfk)
 ```python
 # TODO: Put output here
 ```
-, and you can optionally limit the properties returned with `properties` input argument and use the same filtering mechanism above through `filters` input argument:
+, optionally limiting the properties returned with `properties` input argument and using the same filtering mechanism above through `filters` input argument:
 ```python
 large_boeing_aircraft_currently_in_jfk = jfk_airport.list_linked_objects(
     "airport-to-current-aircraft",

@@ -13,8 +13,9 @@
 #  limitations under the License.
 
 from typing import Generator, List, Dict
+import requests
 
-from palantir.core.types import ResourceIdentifier, PalantirContext
+from palantir.core.types import ResourceIdentifier
 from palantir.objects import OrderTerm, PropertyFilter
 
 
@@ -58,7 +59,11 @@ class Ontology:
 
         Returns: An :class:`ObjectType` object representing the object type
         """
-        return self.client
+        obj_type = self.client.get_object_type(str(self.rid), api_name)
+        if obj_type is None:
+            raise ValueError("The specified object type in the ontology does not exist or is not visible to the user.")
+        else:
+            return obj_type
 
     def __eq__(self, other) -> bool:
         return other is self or (

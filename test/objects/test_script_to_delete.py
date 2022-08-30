@@ -6,13 +6,15 @@ class TestMyScript:
     def test_script(self):
         pass
         """
-        self.rid = ""
         from palantir import objects
-        ontologies = objects.list_ontologies()
 
         my_ontology = objects.ontology()
 
         all_object_types = list(my_ontology.list_object_types())
 
+        airport_type = my_ontology.object_type("ExampleDataAirport")
+        bad_object_type = my_ontology.object_type("bad")
+
         print("Hello world")
         """
+

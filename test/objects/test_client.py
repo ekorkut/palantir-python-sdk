@@ -119,3 +119,6 @@ class TestClient:
             ]
         ))
 
+    def test_get_object_type(self):
+        pass
+

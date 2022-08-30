@@ -14,7 +14,7 @@
 
 import pytest
 from mockito import mock, when, verify
-from expects import expect, equal
+from expects import expect, equal, raise_error
 
 from palantir.core.types import ResourceIdentifier
 from palantir.objects.core import Ontology, ObjectType
@@ -33,6 +33,7 @@ class TestOntology:
             display_name="Ontology 1 display",
             client=self.client
         )
+        self.object_type_good = "GoodObjectType"
 
     def test_list_object_types(self):
         object_type1 = ObjectType(
@@ -77,4 +78,28 @@ class TestOntology:
         expect(list(self.ontology.list_object_types())).to(equal([object_type1, object_type2]))
 
     def test_object_type(self):
-        pass
+        object_type_to_return = ObjectType(
+                api_name=self.object_type_good,
+                description="Object Type 1 description",
+                primary_key=["type_one_primary_key"],
+                properties={
+                    "type1_prop1": {
+                        "description": None,
+                        "base_type": "String"
+                    },
+                    "type1_prop2": {
+                        "description": '',
+                        "base_type": 'Array<String>'
+                    }
+                },
+                rid=ResourceIdentifier.try_parse("ri.ontology.main.object-type.1")
+            )
+        when(self.client).get_object_type(self.ontology_rid, self.object_type_good).thenReturn(
+            object_type_to_return
+        )
+
+        expect(self.ontology.object_type(self.object_type_good)).to(equal(object_type_to_return))
+
+    def test_object_type_exception(self):
+        when(self.client).get_object_type(self.ontology_rid, self.object_type_good).thenReturn(None)
+        expect(lambda: self.ontology.object_type(self.object_type_good)).to(raise_error(ValueError))

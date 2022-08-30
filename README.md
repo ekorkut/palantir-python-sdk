@@ -186,7 +186,7 @@ airport_type = my_ontology.object_type("ExampleDataAirport")
 airport_type
 ```
 ```python
-# TODO: Put output here
+ObjectType(api_name="ExampleDataAirport", primary_key="['airport']", rid="ri.ontology.main.object-type.000fee5d-7c54-4c6c-afd1-cef71c167c08")
 ```
 
 #### List object instances for an object type

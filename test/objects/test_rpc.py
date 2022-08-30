@@ -139,4 +139,7 @@ class TestRPC:
             assert output.data[1].properties["o2prop2"].description == ""
             assert output.data[1].properties["o2prop2"].base_type == "String"
 
+    def test_get_object_type(self):
+        pass
+
 

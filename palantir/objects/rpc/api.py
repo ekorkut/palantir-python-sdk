@@ -207,3 +207,29 @@ class APIService(Service):
 
         _decoder = ConjureDecoder()
         return _decoder.decode(_response.json(), ListObjectTypesResponse)
+
+    def get_object_type(self, auth_header: str, ontology_rid: str, object_type: str):
+        _headers: Dict[str, Any] = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": auth_header,
+        }
+
+        _params: Dict[str, Any] = {}
+        _path_params: Dict[str, Any] = {
+            "ontology_rid": ontology_rid,
+            "object_type": object_type
+        }
+
+        _json: Any = None
+
+        _path = "/ontologies/{ontology_rid}/objectTypes/{object_type}"
+        _path = _path.format(**_path_params)
+
+        _response = self._request(
+            "GET", self._uri + _path, params=_params, headers=_headers, json=_json
+        )
+
+        _decoder = ConjureDecoder()
+        return _decoder.decode(_response.json(), ObjectType)
+

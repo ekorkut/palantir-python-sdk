@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import typing
+from requests.exceptions import HTTPError
 
 from palantir.core.types import PalantirContext, ResourceIdentifier
 from palantir.core.rpc import ConjureClient
@@ -84,3 +85,18 @@ class ObjectsClient:
                 properties=convert_properties_to_dict(obj_type.properties),
                 rid=ResourceIdentifier.try_parse(obj_type.rid)
             )
+
+    def get_object_type(self, ontology_rid, object_type) -> ObjectType:
+        try:
+            data = self._api_service.get_object_type(
+                auth_header=self.ctx.auth_token, ontology_rid=ontology_rid, object_type=object_type
+            )
+            return ObjectType(
+                api_name=data.api_name,
+                description=data.description,
+                rid=ResourceIdentifier.try_parse(data.rid),
+                properties=convert_properties_to_dict(data.properties),
+                primary_key=data.primary_key
+            )
+        except HTTPError:
+            return None

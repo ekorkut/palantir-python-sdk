@@ -53,7 +53,17 @@ class TestObjects:
             expect(found_ontologies[1]).to(equal(self.ontology2))
 
     def test_list_ontologies_with_ctx_input(self):
-        pass
+        with patch('palantir.objects.ObjectsClient') as mocked_client:
+            mocked_client.return_value.list_ontologies.return_value = [self.ontology1, self.ontology2]
+            ctx: PalantirContext = PalantirContext(
+                StaticHostnameProvider("unused"),
+                StaticTokenProvider(AuthToken(self.AUTH_HEADER))
+            )
+            found_ontologies = list_ontologies(ctx)
+            mocked_client.assert_called()
+            expect(mocked_client.call_args[0][0].ctx).to(equal(ctx))
+            expect(found_ontologies[0]).to(equal(self.ontology1))
+            expect(found_ontologies[1]).to(equal(self.ontology2))
 
     def test_ontology_with_rid_input(self):
         with patch('palantir.objects.list_ontologies') as mocked_list:

@@ -21,6 +21,16 @@ from palantir.objects.rpc.api import APIService
 from palantir.objects.core import Ontology, ObjectType
 
 
+def convert_properties_to_dict(props_input):
+    dict_output = {}
+    for prop, value in props_input.items():
+        dict_output[prop] = {
+            "description": value.description,
+            'base_type': value.base_type
+        }
+    return dict_output
+
+
 class ObjectServices:
     def __init__(self, ctx: PalantirContext):
         self.factory = ConjureClient()
@@ -71,6 +81,6 @@ class ObjectsClient:
                 api_name=obj_type.api_name,
                 description=obj_type.description,
                 primary_key=obj_type.primary_key,
-                properties=obj_type.properties,
+                properties=convert_properties_to_dict(obj_type.properties),
                 rid=ResourceIdentifier.try_parse(obj_type.rid)
             )

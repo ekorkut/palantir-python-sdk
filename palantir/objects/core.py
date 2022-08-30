@@ -58,7 +58,7 @@ class Ontology:
 
         Returns: An :class:`ObjectType` object representing the object type
         """
-        pass
+        return self.client
 
     def __eq__(self, other) -> bool:
         return other is self or (
@@ -128,6 +128,16 @@ class ObjectType:
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other) -> bool:
+        return other is self or (
+                isinstance(other, ObjectType)
+                and other.rid == self.rid
+                and other.api_name == self.api_name
+                and other.primary_key == self.primary_key
+                and other.description == self.description
+                and other.properties == self.properties
+        )
 
 
 class Object:
